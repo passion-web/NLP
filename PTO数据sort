@@ -1,0 +1,46 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed May 26 15:48:45 2021
+
+@author: ASUS
+"""
+
+from collections import defaultdict
+from collections import Counter
+
+f = open('F:/result_fen.txt',encoding="utf-8")
+wf = open('F:/sort_match_PTO.txt', 'w')
+
+wf.write('pmid\tPTO\tterm\ttime\n')
+
+f_list = f.readlines()
+f.close()
+PMID_dict = defaultdict(list)  #使用字典，在每个pmid中存放多个PTO
+PTO_dict = {}
+
+a=0
+for line in f_list:  #遍历reference中挖掘的PTO
+    l = line.strip()
+    line = l.split('\t')
+    a+=1
+    try:
+        if line[2] != 'pmid':
+            PMID = line[2]
+            PTO = line[0]
+            Term = line[3]
+            PTO_dict[PTO] = Term   #将PTO号和Term对应存放
+            PMID_dict[PMID].append(PTO) #在相同的PMID中存放对应的PTO号
+    except:
+        print(line)
+        print(a)
+    
+        
+
+for i in PMID_dict.keys():  #遍历每个PMID
+    time_dict = Counter(PMID_dict['{0}'.format(i)])  #time_dict是该PMID下，每个PTO对应的次数
+    for j in time_dict.keys():  #遍历每个PTO
+        time = time_dict['{0}'.format(j)]
+        wf.write('{0}\t{1}\t{2}\t{3}\n'.format(i,j,PTO_dict['{0}'.format(j)],time))
+        
+wf.close()
+    
